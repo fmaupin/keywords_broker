@@ -1,0 +1,60 @@
+{
+  "exchanges": [
+    {
+      "name": "qchunks_ex",
+      "vhost": "keywords",
+      "type": "direct",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    }
+  ],
+  "queues": [
+    {
+      "name": "qchunks",
+      "vhost": "keywords",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-delivery-limit": 3,
+        "x-message-ttl": 3600000,
+        "x-queue-type": "quorum"
+      }
+    }
+  ],
+  "bindings": [
+    {
+      "source": "qchunks_ex",
+      "vhost": "keywords",
+      "destination": "qchunks",
+      "destination_type": "queue",
+      "routing_key": "message.qchunks",
+      "arguments": {}
+    }
+  ],
+  "users": [
+    {
+      "name": "admin",
+      "password_hash": "kI3GCmuz7tp9wJQo4CwKdfoH8j4jGNyVlii5XN/a7VRhnWh5",
+      "hashing_algorithm": "rabbit_password_hashing_sha256",
+      "tags": "administrator"
+    }
+  ],
+  "vhosts": [
+    {
+      "name": "keywords"
+    }
+  ],
+  "permissions": [
+    {
+      "user": "admin",
+      "vhost": "keywords",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
+    }
+  ],
+  "parameters": [],
+  "policies": []
+}
