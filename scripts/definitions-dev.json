@@ -1,0 +1,70 @@
+{
+    "vhosts": [
+        {
+            "name": "keywords-dev"
+        }
+    ],
+    "users": [
+        {
+            "name": "read-content-dev",
+            "password": "dev123",
+            "tags": ""
+        },
+        {
+            "name": "dev-admin",
+            "password": "admin123",
+            "tags": "administrator"
+        }
+    ],
+    "permissions": [
+        {
+            "user": "read-content-dev",
+            "vhost": "keywords-dev",
+            "configure": "^qchunks_.*",
+            "write": "^qchunks_.*",
+            "read": "^qchunks_.*"
+        },
+        {
+            "user": "dev-admin",
+            "vhost": "keywords-dev",
+            "configure": ".*",
+            "write": ".*",
+            "read": ".*"
+        }
+    ],
+    "exchanges": [
+        {
+            "name": "qchunks_ex",
+            "vhost": "keywords-dev",
+            "type": "direct",
+            "durable": true,
+            "auto_delete": false,
+            "internal": false,
+            "arguments": {}
+        }
+    ],
+    "queues": [
+        {
+            "name": "qchunks",
+            "vhost": "keywords-dev",
+            "durable": true,
+            "auto_delete": false,
+            "arguments": {
+                "x-queue-type": "classic",
+                "x-message-ttl": 600000
+            }
+        }
+    ],
+    "bindings": [
+        {
+            "source": "qchunks_ex",
+            "vhost": "keywords-dev",
+            "destination": "qchunks",
+            "destination_type": "queue",
+            "routing_key": "message.qchunks",
+            "arguments": {}
+        }
+    ],
+    "parameters": [],
+    "policies": []
+}
