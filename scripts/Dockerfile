@@ -1,8 +1,9 @@
-FROM rabbitmq:4.1.3-management
+FROM rabbitmq:4.1.4-management
 
 COPY rabbitmq.config /etc/rabbitmq/
 
-COPY definitions.json /etc/rabbitmq/
+# definitions for profile development
+COPY definitions-dev.json /etc/rabbitmq/definitions.json
 
 RUN chown rabbitmq:rabbitmq /etc/rabbitmq/rabbitmq.config  /etc/rabbitmq/definitions.json
 

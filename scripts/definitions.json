@@ -1,4 +1,26 @@
 {
+  "vhosts": [
+    {
+      "name": "keywords"
+    }
+  ],
+  "users": [
+    {
+      "name": "read-content-user",
+      "password_hash": "kI3GCsoFcrqNFoVd9k2IdPn8Iy/EkZO8g2WwA+7oW4XkasRw",
+      "hashing_algorithm": "rabbit_password_hashing_sha256",
+      "tags": ""
+    }
+  ],
+  "permissions": [
+    {
+      "user": "read-content-user",
+      "vhost": "keywords",
+      "configure": "^qchunks_.*",
+      "write": "^qchunks_.*",
+      "read": "^qchunks_.*"
+    }
+  ],
   "exchanges": [
     {
       "name": "qchunks_ex",
@@ -17,9 +39,9 @@
       "durable": true,
       "auto_delete": false,
       "arguments": {
-        "x-delivery-limit": 3,
+        "x-queue-type": "quorum",
         "x-message-ttl": 3600000,
-        "x-queue-type": "quorum"
+        "x-delivery-limit": 3
       }
     }
   ],
@@ -27,32 +49,11 @@
     {
       "source": "qchunks_ex",
       "vhost": "keywords",
+      "durable": true,
       "destination": "qchunks",
       "destination_type": "queue",
       "routing_key": "message.qchunks",
       "arguments": {}
-    }
-  ],
-  "users": [
-    {
-      "name": "admin",
-      "password_hash": "kI3GCmuz7tp9wJQo4CwKdfoH8j4jGNyVlii5XN/a7VRhnWh5",
-      "hashing_algorithm": "rabbit_password_hashing_sha256",
-      "tags": "administrator"
-    }
-  ],
-  "vhosts": [
-    {
-      "name": "keywords"
-    }
-  ],
-  "permissions": [
-    {
-      "user": "admin",
-      "vhost": "keywords",
-      "configure": ".*",
-      "write": ".*",
-      "read": ".*"
     }
   ],
   "parameters": [],

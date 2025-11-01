@@ -1,13 +1,15 @@
 
-## projet broker
+# Projet broker
 
-L'objectif de ce projet est de déployer un broker de messages (rabbitMQ) sous forme de container Docker avec une configuration type.
+L'objectif de ce projet est de déployer un broker de messages (rabbitMQ) sous forme d'image Docker avec une configuration type.
 
-### Pré-requis
+Les configurations sont associées aux profils d'environnement (dev, prod)
+
+## Pré-requis
 
 Installation / exécution de [Docker] (https://www.docker.com/)
 
-### Image & container Docker
+## Image & container Docker
 
 https://hub.docker.com/_/rabbitmq
 
@@ -20,15 +22,13 @@ Cf. pour plus de détails fichiers "*Dockerfile*", "*definitions.json*" & "*rabb
 
 * script "*./run.sh*" -> instantiation image (container)
 
-### Monitoring broker
+## Monitoring broker
 
 monitoring console : http://localhost:16000
 
-username/password -> définis dans fichier configuration "*definitions.json*"
+username/password -> définis dans fichier configuration dans le fichier "*definitions.json*" actif
 
-**IMPORTANT : exécution script "*scripts/hash_pwd*" pour définir password user**
-
-dans exemple fichier user/password -> "*admin*" / "*admin*"
+**IMPORTANT : exécution script "*scripts/hash_pwd*" pour définir password user** (mode prod)
 
 ### vhost, exchange, queue
 
@@ -38,7 +38,7 @@ https://www.rabbitmq.com/tutorials/amqp-concepts.html
 
 * Delivery mode messages vers queue -> Direct exchange routing
 
-* vhost créé -> 'keywords'
+* exemple vhost créé -> 'keywords'
 
 user -> set permissions pour vhost (keywords)
 
@@ -46,12 +46,12 @@ user -> set permissions pour vhost (keywords)
 
 => qchunks (queue pour pusher des messages)
 
-arguments pour chaque queue :
+exemple arguments pour queue :
 - 'x-message-ttl': *3.600.000* (milli-secondes -> 1 heure)
 - 'x-delivery-limit' : *3*
 - 'x-queue-type' : '*quorum*'
 
-### push image
+## push image
 
 Pré-requis : credentials GitHub
 
@@ -61,11 +61,11 @@ Créer au préalable un personal token sur GitHub (read/writing/delete packages 
 
 Image pushée sur GitHub Container Registry (disponible sur onglet "Packages")
 
-### Auteur
+## Auteur
 
 Ce projet a été créé par Fabrice MAUPIN.
 
-### License
+## License
 
 GNU General Public License v3.0
 
