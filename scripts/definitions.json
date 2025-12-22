@@ -7,7 +7,13 @@
   "users": [
     {
       "name": "read-content-user",
-      "password_hash": "kI3GCsoFcrqNFoVd9k2IdPn8Iy/EkZO8g2WwA+7oW4XkasRw",
+      "password_hash": "xxxxxxx",
+      "hashing_algorithm": "rabbit_password_hashing_sha256",
+      "tags": ""
+    },
+    {
+      "name": "extract-user",
+      "password_hash": "xxxxxxx",
       "hashing_algorithm": "rabbit_password_hashing_sha256",
       "tags": ""
     }
@@ -16,14 +22,48 @@
     {
       "user": "read-content-user",
       "vhost": "keywords",
-      "configure": "^qchunks_.*",
-      "write": "^qchunks_.*",
-      "read": "^qchunks_.*"
+      "configure": "^$",
+      "write": "^qchunks_ex$",
+      "read": "^$"
+    },
+    {
+      "user": "extract-user",
+      "vhost": "keywords",
+      "configure": "^$",
+      "write": "^qcompleted(\\.dlq)?$",
+      "read": "^qchunks(\\.dlq)?$"
     }
   ],
   "exchanges": [
     {
       "name": "qchunks_ex",
+      "vhost": "keywords",
+      "type": "direct",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    },
+    {
+      "name": "qchunks_ex.dlq",
+      "vhost": "keywords",
+      "type": "direct",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    },
+    {
+      "name": "qcompleted_ex",
+      "vhost": "keywords",
+      "type": "direct",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    },
+    {
+      "name": "qcompleted_ex.dlq",
       "vhost": "keywords",
       "type": "direct",
       "durable": true,
@@ -41,7 +81,38 @@
       "arguments": {
         "x-queue-type": "quorum",
         "x-message-ttl": 3600000,
-        "x-delivery-limit": 3
+        "x-dead-letter-exchange": "qchunks_ex.dlq",
+        "x-dead-letter-routing-key": "message.qchunks.dlq"
+      }
+    },
+    {
+      "name": "qchunks.dlq",
+      "vhost": "keywords",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-queue-type": "quorum"
+      }
+    },
+    {
+      "name": "qcompleted",
+      "vhost": "keywords",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-queue-type": "quorum",
+        "x-message-ttl": 3600000,
+        "x-dead-letter-exchange": "qcompleted_ex.dlq",
+        "x-dead-letter-routing-key": "message.qcompleted.dlq"
+      }
+    },
+    {
+      "name": "qcompleted.dlq",
+      "vhost": "keywords",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-queue-type": "quorum"
       }
     }
   ],
@@ -49,10 +120,33 @@
     {
       "source": "qchunks_ex",
       "vhost": "keywords",
-      "durable": true,
       "destination": "qchunks",
       "destination_type": "queue",
       "routing_key": "message.qchunks",
+      "arguments": {}
+    },
+    {
+      "source": "qchunks_ex.dlq",
+      "vhost": "keywords",
+      "destination": "qchunks.dlq",
+      "destination_type": "queue",
+      "routing_key": "message.qchunks.dlq",
+      "arguments": {}
+    },
+    {
+      "source": "qcompleted_ex",
+      "vhost": "keywords",
+      "destination": "qcompleted",
+      "destination_type": "queue",
+      "routing_key": "message.qcompleted",
+      "arguments": {}
+    },
+    {
+      "source": "qcompleted_ex.dlq",
+      "vhost": "keywords",
+      "destination": "qcompleted.dlq",
+      "destination_type": "queue",
+      "routing_key": "message.qcompleted.dlq",
       "arguments": {}
     }
   ],

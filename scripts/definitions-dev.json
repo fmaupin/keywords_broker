@@ -33,7 +33,7 @@
             "user": "extract-dev",
             "vhost": "keywords-dev",
             "configure": "^$",
-            "write": "^$",
+            "write": "^qcompleted(\\.dlq)?$",
             "read": "^qchunks(\\.dlq)?$"
         },
         {
@@ -56,6 +56,24 @@
         },
         {
             "name": "qchunks_ex.dlq",
+            "vhost": "keywords-dev",
+            "type": "direct",
+            "durable": true,
+            "auto_delete": false,
+            "internal": false,
+            "arguments": {}
+        },
+        {
+            "name": "qcompleted_ex",
+            "vhost": "keywords-dev",
+            "type": "direct",
+            "durable": true,
+            "auto_delete": false,
+            "internal": false,
+            "arguments": {}
+        },
+        {
+            "name": "qcompleted_ex.dlq",
             "vhost": "keywords-dev",
             "type": "direct",
             "durable": true,
@@ -85,6 +103,27 @@
             "arguments": {
                 "x-queue-type": "classic"
             }
+        },
+        {
+            "name": "qcompleted",
+            "vhost": "keywords-dev",
+            "durable": true,
+            "auto_delete": false,
+            "arguments": {
+                "x-queue-type": "classic",
+                "x-message-ttl": 600000,
+                "x-dead-letter-exchange": "qcompleted_ex.dlq",
+                "x-dead-letter-routing-key": "message.qcompleted.dlq"
+            }
+        },
+        {
+            "name": "qcompleted.dlq",
+            "vhost": "keywords-dev",
+            "durable": true,
+            "auto_delete": false,
+            "arguments": {
+                "x-queue-type": "classic"
+            }
         }
     ],
     "bindings": [
@@ -102,6 +141,22 @@
             "destination": "qchunks.dlq",
             "destination_type": "queue",
             "routing_key": "message.qchunks.dlq",
+            "arguments": {}
+        },
+        {
+            "source": "qcompleted_ex",
+            "vhost": "keywords-dev",
+            "destination": "qcompleted",
+            "destination_type": "queue",
+            "routing_key": "message.qcompleted",
+            "arguments": {}
+        },
+        {
+            "source": "qcompleted_ex.dlq",
+            "vhost": "keywords-dev",
+            "destination": "qcompleted.dlq",
+            "destination_type": "queue",
+            "routing_key": "message.qcompleted.dlq",
             "arguments": {}
         }
     ],
