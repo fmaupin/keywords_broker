@@ -16,6 +16,12 @@
       "password_hash": "xxxxxxx",
       "hashing_algorithm": "rabbit_password_hashing_sha256",
       "tags": ""
+    },
+    {
+      "name": "aggregate-user",
+      "password_hash": "xxxxxxx",
+      "hashing_algorithm": "rabbit_password_hashing_sha256",
+      "tags": ""
     }
   ],
   "permissions": [
@@ -30,8 +36,15 @@
       "user": "extract-user",
       "vhost": "keywords",
       "configure": "^$",
-      "write": "^qcompleted(\\.dlq)?$",
+      "write": "^qcompleted_ex$",
       "read": "^qchunks(\\.dlq)?$"
+    },
+    {
+      "user": "aggregate-user",
+      "vhost": "keywords",
+      "configure": "^$",
+      "write": "^qaggregated_ex$",
+      "read": "^qcompleted(\\.dlq)?$"
     }
   ],
   "exchanges": [
@@ -64,6 +77,24 @@
     },
     {
       "name": "qcompleted_ex.dlq",
+      "vhost": "keywords",
+      "type": "direct",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    },
+    {
+      "name": "qaggregated_ex",
+      "vhost": "keywords",
+      "type": "direct",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    },
+    {
+      "name": "qaggregated_ex.dlq",
       "vhost": "keywords",
       "type": "direct",
       "durable": true,
@@ -114,6 +145,27 @@
       "arguments": {
         "x-queue-type": "quorum"
       }
+    },
+    {
+      "name": "qaggregated",
+      "vhost": "keywords",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-queue-type": "quorum",
+        "x-message-ttl": 3600000,
+        "x-dead-letter-exchange": "qaggregated_ex.dlq",
+        "x-dead-letter-routing-key": "message.qaggregated.dlq"
+      }
+    },
+    {
+      "name": "qaggregated.dlq",
+      "vhost": "keywords",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-queue-type": "quorum"
+      }
     }
   ],
   "bindings": [
@@ -147,6 +199,22 @@
       "destination": "qcompleted.dlq",
       "destination_type": "queue",
       "routing_key": "message.qcompleted.dlq",
+      "arguments": {}
+    },
+    {
+      "source": "qaggregated_ex",
+      "vhost": "keywords",
+      "destination": "qaggregated",
+      "destination_type": "queue",
+      "routing_key": "message.qaggregated",
+      "arguments": {}
+    },
+    {
+      "source": "qaggregated_ex.dlq",
+      "vhost": "keywords",
+      "destination": "qaggregated.dlq",
+      "destination_type": "queue",
+      "routing_key": "message.qaggregated.dlq",
       "arguments": {}
     }
   ],
