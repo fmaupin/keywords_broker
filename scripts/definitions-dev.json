@@ -16,6 +16,11 @@
             "tags": ""
         },
         {
+            "name": "aggregate-dev",
+            "password": "dev123",
+            "tags": ""
+        },
+        {
             "name": "dev-admin",
             "password": "admin123",
             "tags": "administrator"
@@ -35,6 +40,13 @@
             "configure": "^$",
             "write": "^qcompleted(\\.dlq)?$",
             "read": "^qchunks(\\.dlq)?$"
+        },
+        {
+            "user": "aggregate-dev",
+            "vhost": "keywords-dev",
+            "configure": "^$",
+            "write": "^qaggregated(\\.dlq)?$",
+            "read": "^qcompleted(\\.dlq)?$"
         },
         {
             "user": "dev-admin",
@@ -74,6 +86,24 @@
         },
         {
             "name": "qcompleted_ex.dlq",
+            "vhost": "keywords-dev",
+            "type": "direct",
+            "durable": true,
+            "auto_delete": false,
+            "internal": false,
+            "arguments": {}
+        },
+        {
+            "name": "qaggregated_ex",
+            "vhost": "keywords-dev",
+            "type": "direct",
+            "durable": true,
+            "auto_delete": false,
+            "internal": false,
+            "arguments": {}
+        },
+        {
+            "name": "qaggregated_ex.dlq",
             "vhost": "keywords-dev",
             "type": "direct",
             "durable": true,
@@ -124,6 +154,27 @@
             "arguments": {
                 "x-queue-type": "classic"
             }
+        },
+        {
+            "name": "qaggregated",
+            "vhost": "keywords-dev",
+            "durable": true,
+            "auto_delete": false,
+            "arguments": {
+                "x-queue-type": "classic",
+                "x-message-ttl": 600000,
+                "x-dead-letter-exchange": "qaggregated_ex.dlq",
+                "x-dead-letter-routing-key": "message.qaggregated.dlq"
+            }
+        },
+        {
+            "name": "qaggregated.dlq",
+            "vhost": "keywords-dev",
+            "durable": true,
+            "auto_delete": false,
+            "arguments": {
+                "x-queue-type": "classic"
+            }
         }
     ],
     "bindings": [
@@ -157,6 +208,22 @@
             "destination": "qcompleted.dlq",
             "destination_type": "queue",
             "routing_key": "message.qcompleted.dlq",
+            "arguments": {}
+        },
+        {
+            "source": "qaggregated_ex",
+            "vhost": "keywords-dev",
+            "destination": "qaggregated",
+            "destination_type": "queue",
+            "routing_key": "message.qaggregated",
+            "arguments": {}
+        },
+        {
+            "source": "qaggregated_ex.dlq",
+            "vhost": "keywords-dev",
+            "destination": "qaggregated.dlq",
+            "destination_type": "queue",
+            "routing_key": "message.qaggregated.dlq",
             "arguments": {}
         }
     ],
